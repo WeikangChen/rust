@@ -5,8 +5,3 @@ authors = ["Weikang Chen <wchen@volanttrading.com>"]
 
 [dependencies]
 time = "0.1.38"
-bitflags = "1.0"
-
-[dependencies.libsqlite3-sys]
-path = "libsqlite3-sys"
-version = "0.9"
