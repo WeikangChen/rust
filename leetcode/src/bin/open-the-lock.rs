@@ -42,12 +42,12 @@ fn open_lock(deadends: &[&str], target: &str) -> i32 {
     let deads = deadends
         .iter()
         .map(|x| x.parse::<Cord>().unwrap())
-        .collect::<Vec<Cord>>();
+        .collect::<Vec<_>>();
     let tar = target.parse::<Cord>().unwrap();
-    open_lock_impl(&deads, &tar)
+    open_lock_impl(&deads, &tar).unwrap_or(-1)
 }
 
-fn open_lock_impl(deads: &[Cord], tar: &Cord) -> i32 {
+fn open_lock_impl(deads: &[Cord], tar: &Cord) -> Option<i32> {
     let dirs = vec!(
         Diff(1, 0, 0, 0), Diff(-1, 0, 0, 0),
         Diff(0, 1, 0, 0), Diff( 0,-1, 0, 0),
@@ -59,17 +59,17 @@ fn open_lock_impl(deads: &[Cord], tar: &Cord) -> i32 {
     // println!("{:?}", deads);
     let src = "0000".parse::<Cord>().unwrap();
     if src == *tar {
-        return 0;
+        return Some(0);
     }
     if deads.contains(&src) {
-        return -1;
+        return None;
     }
 
     let mut visited = HashSet::new();
     visited.insert(src.clone());
    
     let mut nxt_cyc = vec!(src);
-    let mut len: i32 = 0;
+    let mut len = 0;
     while nxt_cyc.len() != 0 {
         // println!("{:?}", nxt_cyc);
         len += 1; 
@@ -79,7 +79,7 @@ fn open_lock_impl(deads: &[Cord], tar: &Cord) -> i32 {
             for d in dirs.clone() {
                 let nxt = cur.clone() + d;
                 if nxt == *tar {
-                    return len;
+                    return Some(len);
                 }
                 if deads.contains(&nxt) {
                     continue;
@@ -92,7 +92,7 @@ fn open_lock_impl(deads: &[Cord], tar: &Cord) -> i32 {
             }
         }
     }
-    -1
+    return None;
 }
 
 fn main() {
